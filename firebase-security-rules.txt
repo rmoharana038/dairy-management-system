@@ -1,0 +1,47 @@
+// Firebase Firestore Security Rules
+// Copy and paste these rules into your Firebase Console -> Firestore Database -> Rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users collection - users can only read/write their own profile
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // User entries subcollection - users can only access their own entries
+    match /users/{userId}/entries/{entryId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+// Firebase Authentication Rules (if needed)
+// These rules ensure users can only access their own data
+// 
+// Key Security Features:
+// 1. Users can only read/write their own profile data
+// 2. Users can only access their own milk bottle entries
+// 3. All operations require authentication
+// 4. No public access to any data
+// 5. No cross-user data access
+
+// To apply these rules:
+// 1. Go to Firebase Console (https://console.firebase.google.com/)
+// 2. Select your project
+// 3. Go to Firestore Database
+// 4. Click on "Rules" tab
+// 5. Replace the existing rules with the rules above
+// 6. Click "Publish"
+
+// Additional Firebase Console Setup:
+// 1. Enable Authentication with Email/Password
+// 2. Enable Firestore Database
+// 3. Add your domain to authorized domains in Authentication settings
+// 4. Make sure your Firebase project has the correct configuration
